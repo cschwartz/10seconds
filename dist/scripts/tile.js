@@ -12,9 +12,13 @@
       var newItem;
       newItem = item.create(description);
       this.addChild(newItem);
-      return this.items.push(newItem);
+      this.items.push(newItem);
+      if (this.currentPlayer) {
+        return this.itemCompleted(this.currentPlayer);
+      }
     },
     playerEntered: function(player) {
+      this.currentPlayer = player;
       this.currentItemIndex = 0;
       return this.itemCompleted(player);
     },
@@ -26,6 +30,7 @@
         return this.currentItemIndex++;
       } else {
         if (player.canMoveForward()) {
+          this.currentPlayer = void 0;
           return player.moveForward();
         }
       }

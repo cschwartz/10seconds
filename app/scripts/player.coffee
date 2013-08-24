@@ -4,7 +4,7 @@
     @map = map
     @initWithFile("player.png")
     @setPosition(cc.p(x * 64 + 32, y * 64 + 32))
-    @speed = 1/2 #2 tiles per second
+    @speed = 1/4 #2 tiles per second
 
   canMoveForward: ->
     @map.playerCanMoveForward(@)
@@ -17,13 +17,20 @@
 
   rotate: (angle, tile) ->
     angleToRotate = (angle - @getRotation()) % 360
-    if angleToRotate < 0
-      angleToRotate += 360
-    @runAction cc.Sequence.create [
-      cc.RotateBy.create(@speed, angleToRotate)
-      cc.CallFunc.create((-> @itemCompleted(tile)), @)
-    ]
-
+    if Math.abs(angleToRotate) > 180
+      if angleToRotate > 0
+        angleToRotate -= 360
+      else
+        angleToRotate += 360
+    if angleToRotate != 0
+      @runAction cc.Sequence.create [
+        cc.RotateBy.create(@speed, angleToRotate)
+        cc.CallFunc.create((-> @itemCompleted(tile)), @)
+      ]
+    else 
+      @runAction cc.Sequence.create [
+        cc.CallFunc.create((-> @itemCompleted(tile)), @)
+      ]
   getTilePosition: ->
     cc.p(Math.floor(@getPositionX() / 64), Math.floor(@getPositionY() / 64))
 

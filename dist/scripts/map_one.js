@@ -16,11 +16,6 @@
         cols: cols,
         items: [
           {
-            x: 1,
-            y: 5,
-            type: ChangeDirection,
-            newDirection: 90
-          }, {
             x: 5,
             y: 5,
             type: ChangeDirection,
@@ -35,6 +30,21 @@
             y: 1,
             type: ChangeDirection,
             newDirection: 0
+          }
+        ],
+        inventory: [
+          {
+            type: ChangeDirection,
+            newDirection: 90,
+            amount: 1
+          }, {
+            type: ChangeDirection,
+            newDirection: 180,
+            amount: 1
+          }, {
+            type: ChangeDirection,
+            newDirection: 90,
+            amount: 1
           }
         ]
       };

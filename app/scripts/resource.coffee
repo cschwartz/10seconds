@@ -1,9 +1,10 @@
-@sprite_sheet_plist = "sprite_sheet.plist"
-@sprite_sheet_png = "sprite_sheet.png"
 @empty = "empty.png"
 @wall = "wall.png"
 @player = "player.png"
 @change_direction = "change_direction.png"
+@button_pressed = "button_pressed.png"
+@button_unpressed = "button_unpressed.png"
+@button_disabled = "button_disabled.png"
 
 @g_resources = [
   {
@@ -16,10 +17,13 @@
     src:player
   },
   {
-    src:sprite_sheet_plist
+    src:button_unpressed
   },
   {
-    src:sprite_sheet_png
+    src:button_pressed
+  },
+  {
+    src:button_disabled
   },
   {
     src: change_direction

@@ -1,3 +1,80 @@
+@InventoryItem = cc.MenuItemToggle.extend
+  init: (game, itemBar, description) ->
+    @game = game
+    @itemBar = itemBar
+    @description = description
+
+    button_unpressed_item = cc.MenuItemSprite.create(cc.Sprite.create(button_unpressed))
+    button_pressed_item = cc.MenuItemSprite.create(cc.Sprite.create(button_pressed))
+    button_disabled_item = cc.MenuItemSprite.create(cc.Sprite.create(button_disabled))
+
+    @initWithItems([button_unpressed_item, button_pressed_item, button_disabled_item, (-> @buttonPressed()), @])
+
+
+    if not description
+      @setSelectedIndex(2)
+      @setEnabled(false)
+    else
+      @icon = description.type.createIcon(description)
+      @addChild(@icon, 1)
+      true
+
+  useAtLocation: (x, y) ->
+    @game.addItem(x, y, @description.type,  @description)
+    @description.amount--
+    if @description.amount == 0
+      @setEnabled(false)
+      @setSelectedIndex(2)
+      @icon.setOpacity(127)
+      @game.setCurrentInventory(undefined)
+
+  disable: ->
+    if @description.amount != 0
+      @setSelectedIndex(0)
+
+  buttonPressed: ->
+    if @getSelectedIndex() == 1
+      @itemBar.selected(@)
+      @game.setCurrentInventory(@)
+    else
+      @itemBar.selected(undefined)
+      @game.setCurrentInventory(undefined)
+      @setSelectedIndex(0)
+
+InventoryItem.create = (game, menu, description) ->
+  item = new InventoryItem()
+  item.init(game, menu, description)
+  item
+
+@ItemBar = cc.Node.extend
+  init: (game, inventory) ->
+    @_super()
+
+    @game = game
+
+    screenSize = cc.Director.getInstance().getWinSize()
+    @menu = cc.Menu.create()
+    @addChild(@menu)
+
+    @menu.setPosition(screenSize.width / 2, screenSize.height - 32)
+
+    for i in [0...16]
+      item = InventoryItem.create(game, @, inventory[i])
+      @menu.addChild(item)
+
+    @menu.alignItemsHorizontallyWithPadding(0)
+
+  selected: (item) ->
+    if @selectedItem
+      @selectedItem.disable()
+
+    @selectedItem = item
+      
+ItemBar.create = (game, inventory) ->
+  itemBar = new ItemBar()
+  itemBar.init(game, inventory)
+  itemBar
+
 @TimeGauge = cc.Node.extend
   init: (game) ->
     @_super()
@@ -43,6 +120,9 @@ TimeGauge.create = (game) ->
     @timeGauge = TimeGauge.create(@)
     @addChild(@timeGauge)
 
+    @itemBar = ItemBar.create(@, @map.getInventory())
+    @addChild(@itemBar)
+
     @schedule(@update)
 
     @isRunning = false
@@ -59,17 +139,24 @@ TimeGauge.create = (game) ->
 
   timeEllapsed: ->
     @player.stopAllActions()
+
   createLevel: (levelName) ->
     true
 
   menuCloseCallback: (sender) ->
     true
 
+  addItem: (x, y, type, description) ->
+    @map.addItem(x, y, type, description)
+
+  setCurrentInventory: (inventory) ->
+    @currentInventory = inventory
+
   onTouchesBegan: (touches, events) ->
-    if touches
+    if touches and @currentInventory
       touch = touches[0]
       tap = touch.getLocation()
-      @map.addItem(Math.floor(tap.x / 64), Math.floor(tap.y / 64), ChangeDirection, {newDirection: 90})
+      @currentInventory.useAtLocation(Math.floor(tap.x / 64), Math.floor(tap.y / 64))
     true
 
   onTouchesMoved: (touches, event) ->

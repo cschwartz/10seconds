@@ -11,8 +11,11 @@
     newItem = item.create(description)
     @addChild(newItem)
     @items.push(newItem)
+    if @currentPlayer
+      @itemCompleted(@currentPlayer)
 
   playerEntered: (player) ->
+    @currentPlayer = player
     @currentItemIndex = 0
     @itemCompleted(player)
 
@@ -23,6 +26,7 @@
       @currentItemIndex++
     else
       if player.canMoveForward()
+        @currentPlayer = undefined
         player.moveForward()
 
   handleCurrentItem: (player) ->
