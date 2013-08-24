@@ -16,20 +16,14 @@
         cols: cols,
         items: [
           {
-            x: 5,
+            x: 1,
             y: 5,
             type: ChangeDirection,
-            newDirection: 180
+            newDirection: 90
           }, {
             x: 5,
-            y: 1,
-            type: ChangeDirection,
-            newDirection: 270
-          }, {
-            x: 1,
-            y: 1,
-            type: ChangeDirection,
-            newDirection: 0
+            y: 5,
+            type: Goal
           }
         ],
         inventory: [
@@ -46,7 +40,8 @@
             newDirection: 90,
             amount: 1
           }
-        ]
+        ],
+        nextLevel: MapOne
       };
       return level;
     },
