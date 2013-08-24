@@ -34,6 +34,10 @@
     currentPosition = player.getTilePosition()
     currentTile = @tiles[currentPosition.x][currentPosition.y]
     currentTile.playerEntered(player)
+  
+  addItem: (x, y, type, item) ->
+    tile = @tiles[x][y].addItem(type, item)
+
 
   idToTile: (id) ->
     switch id

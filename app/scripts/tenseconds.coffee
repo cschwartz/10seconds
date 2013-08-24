@@ -1,53 +1,34 @@
-@Player = cc.Sprite.extend
-  init: (map, x, y) ->
+@TimeGauge = cc.Node.extend
+  init: (game) ->
     @_super()
-    @map = map
-    @initWithFile("player.png")
-    @setPosition(cc.p(x * 64 + 32, y * 64 + 32))
-    @speed = 1/2 #2 tiles per second
 
-  canMoveForward: ->
-    @map.playerCanMoveForward(@)
+    @game = game
 
-  moveForward: ->
-    console.log("MovedForward")
-    @runAction cc.Sequence.create [
-      cc.MoveBy.create(@speed, @getRotatedForwardDirection())
-      cc.CallFunc.create((-> @moveComplete()), @)
-    ]
+    @totalTime = 10
+    @currentTime = @totalTime
 
-  rotate: (angle, tile) ->
-    angleToRotate = (angle - @getRotation()) % 360
-    if angleToRotate < 0
-      angleToRotate += 360
-    @runAction cc.Sequence.create [
-      cc.RotateBy.create(@speed, angleToRotate)
-      cc.CallFunc.create((-> @itemCompleted(tile)), @)
-    ]
+    @drawing = new cc.DrawingPrimitiveWebGL()
+    @screenSize = cc.Director.getInstance().getWinSize()
 
-  getTilePosition: ->
-    cc.p(Math.floor(@getPositionX() / 64), Math.floor(@getPositionY() / 64))
+  update: (dt) ->
+    @currentTime -= dt
+    if @currentTime < 0
+      @currentTime = 0 
+      @game.timeEllapsed()
 
-  getNextTilePosition: ->
-    nextPixelPosition = cc.pAdd(@getPosition(), @getRotatedForwardDirection())
-    cc.p(Math.floor(nextPixelPosition.x / 64), Math.floor(nextPixelPosition.y / 64))
+  draw: ->
+    colorBackground = new cc.c4f(52/255, 73/255, 94/255, 255/255)
+    colorEnergy = new cc.c4f(52/255, 152/255, 219/255, 255/255)
+    @drawing.drawSolidRect(cc.p(16, 16), cc.p(@screenSize.width - 16, 48), colorBackground)
+    @drawing.drawSolidRect(cc.p(20, 20), cc.p(20 + ((@currentTime) / @totalTime) * (@screenSize.width - 40), 44), colorEnergy)
+    for i in [1...10]
+      @drawing.drawSolidRect(cc.p(16 + (@screenSize.width - 32)*i/10 - 2, 20), cc.p(16 + (@screenSize.width - 32)*i/10 + 2, 44), colorBackground)
+    true
 
-  getRotatedForwardDirection: ->
-    forward = cc.p(0, 64)
-    angle = @getRotation()
-    rotatedDirection = cc.pRotateByAngle(forward, cc.p(0, 0), cc.DEGREES_TO_RADIANS(-angle))
-
-  itemCompleted: (tile) ->
-    tile.itemCompleted(@)
-
-  moveComplete: ->
-    @map.playerMoveCompleted(@)
-
-Player.create = (map, x, y) ->
-  player = new Player()
-  player.init(map, x, y)
-  player
-
+TimeGauge.create = (game) ->
+  timeGauge = new TimeGauge(game)
+  timeGauge.init(game)
+  timeGauge
 
 @GameLayer = cc.Layer.extend
   init: ->
@@ -58,6 +39,9 @@ Player.create = (map, x, y) ->
 
     @player = Player.create(@map, 1, 1)
     @addChild(@player)
+
+    @timeGauge = TimeGauge.create(@)
+    @addChild(@timeGauge)
 
     @schedule(@update)
 
@@ -71,6 +55,10 @@ Player.create = (map, x, y) ->
       @isRunning = true
       @player.moveForward()
 
+    @timeGauge.update(dt)
+
+  timeEllapsed: ->
+    @player.stopAllActions()
   createLevel: (levelName) ->
     true
 
@@ -78,6 +66,10 @@ Player.create = (map, x, y) ->
     true
 
   onTouchesBegan: (touches, events) ->
+    if touches
+      touch = touches[0]
+      tap = touch.getLocation()
+      @map.addItem(Math.floor(tap.x / 64), Math.floor(tap.y / 64), ChangeDirection, {newDirection: 90})
     true
 
   onTouchesMoved: (touches, event) ->
