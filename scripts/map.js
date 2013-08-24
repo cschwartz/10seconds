@@ -2,7 +2,7 @@
 (function() {
   this.Map = cc.Node.extend({
     init: function() {
-      var column, desc, item, row, tile, tileId, tileKlass, type, x, y, _i, _j, _k, _len, _ref, _results;
+      var column, desc, item, row, tile, tileId, tileKlass, type, x, y, _i, _j, _k, _len, _ref;
       this._super();
       this.numCols = 16;
       this.numRows = 11;
@@ -21,15 +21,14 @@
         this.tiles.push(column);
       }
       _ref = desc.items;
-      _results = [];
       for (_k = 0, _len = _ref.length; _k < _len; _k++) {
         item = _ref[_k];
         x = item.x;
         y = item.y;
         type = item.type;
-        _results.push(tile = this.tiles[x][y].addItem(type, item));
+        tile = this.tiles[x][y].addItem(type, item);
       }
-      return _results;
+      return this.inventory = desc.inventory;
     },
     playerCanMoveForward: function(player) {
       var newPosition, nextTile;
@@ -43,6 +42,10 @@
       currentTile = this.tiles[currentPosition.x][currentPosition.y];
       return currentTile.playerEntered(player);
     },
+    addItem: function(x, y, type, item) {
+      var tile;
+      return tile = this.tiles[x][y].addItem(type, item);
+    },
     idToTile: function(id) {
       switch (id) {
         case Map.ids.empty:
@@ -50,6 +53,9 @@
         case Map.ids.wall:
           return WallTile;
       }
+    },
+    getInventory: function() {
+      return this.inventory;
     }
   });
 
