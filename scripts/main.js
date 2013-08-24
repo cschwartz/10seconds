@@ -41,7 +41,18 @@ var cocos2dApp = cc.Application.extend({
             return false;
         }
         // initialize director
+        var designSize = new cc.Size(1024, 768);
         var director = cc.Director.getInstance();
+        var openGLView = director.getOpenGLView();
+        openGLView.setDesignResolutionSize(designSize.width, designSize.height, cc.RESOLUTION_POLICY.SHOW_ALL);
+        var screenSize = openGLView.getFrameSize();
+        director.setContentScaleFactor(screenSize.height / designSize.height);
+
+        var resourcePaths = [];
+        var fileUtils = cc.FileUtils.getInstance();
+
+        resourcePaths.push("images");
+        fileUtils.setSearchPath(resourcePaths);
 
         // enable High Resource Mode(2x, such as iphone4) and maintains low resource on other devices.
         //director.enableRetinaDisplay(true);
