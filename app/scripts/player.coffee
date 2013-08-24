@@ -1,6 +1,7 @@
 @Player = cc.Sprite.extend
-  init: (map, x, y) ->
+  init: (game, map, x, y) ->
     @_super()
+    @game = game
     @map = map
     @initWithFile("player.png")
     @setPosition(cc.p(x * 64 + 32, y * 64 + 32))
@@ -49,9 +50,12 @@
   moveComplete: ->
     @map.playerMoveCompleted(@)
 
-Player.create = (map, x, y) ->
+  levelComplete: ->
+    @game.levelComplete()
+
+Player.create = (game, map, x, y) ->
   player = new Player()
-  player.init(map, x, y)
+  player.init(game, map, x, y)
   player
 
 

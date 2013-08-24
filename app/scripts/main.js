@@ -65,7 +65,7 @@ var cocos2dApp = cc.Application.extend({
 
         //load resources
         cc.LoaderScene.preload(g_resources, function () {
-            director.replaceScene(new this.startScene());
+            director.replaceScene(this.startScene.create(MapOne));
         }, this);
 
         return true;

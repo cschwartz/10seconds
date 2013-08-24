@@ -10,26 +10,25 @@
 
     @initWithItems([button_unpressed_item, button_pressed_item, button_disabled_item, (-> @buttonPressed()), @])
 
-
     if not description
       @setSelectedIndex(2)
       @setEnabled(false)
     else
+      @description.available = true
       @icon = description.type.createIcon(description)
       @addChild(@icon, 1)
       true
 
   useAtLocation: (x, y) ->
     @game.addItem(x, y, @description.type,  @description)
-    @description.amount--
-    if @description.amount == 0
-      @setEnabled(false)
-      @setSelectedIndex(2)
-      @icon.setOpacity(127)
-      @game.setCurrentInventory(undefined)
+    @description.available = false
+    @setEnabled(false)
+    @setSelectedIndex(2)
+    @icon.setOpacity(127)
+    @game.setCurrentInventory(undefined)
 
   disable: ->
-    if @description.amount != 0
+    if @description.available
       @setSelectedIndex(0)
 
   buttonPressed: ->
@@ -108,13 +107,15 @@ TimeGauge.create = (game) ->
   timeGauge
 
 @GameLayer = cc.Layer.extend
-  init: ->
+  init: (mapKlass) ->
     @_super()
 
-    @map = MapOne.create()
+    screenSize = cc.Director.getInstance().getWinSize()
+
+    @map = mapKlass.create()
     @addChild(@map)
 
-    @player = Player.create(@map, 1, 1)
+    @player = Player.create(@, @map, 1, 1)
     @addChild(@player)
 
     @timeGauge = TimeGauge.create(@)
@@ -127,15 +128,61 @@ TimeGauge.create = (game) ->
 
     @isRunning = false
 
+    @label = cc.LabelTTF.create("3", "Times New Roman", 64, cc.c3b(255, 0, 0))
+    @label.setPosition(cc.p(screenSize.width/2, screenSize.height*3/4))
+    @label.setVisible(false)
+    @addChild(@label)
+
+    wait = cc.DelayTime.create(1)
+    start = cc.CallFunc.create((-> @startLevel()), @)
+    action = cc.Sequence.create([
+      cc.CallFunc.create((-> @displayMessage("3")), @)
+      wait.copy()
+      cc.CallFunc.create((-> @displayMessage("2")), @)
+      wait.copy()
+      cc.CallFunc.create((-> @displayMessage("1")), @)
+      wait.copy()
+      cc.CallFunc.create((-> @displayMessage("Go")), @)
+      wait.copy()
+      cc.CallFunc.create((-> @displayMessage(undefined)), @)
+      start
+    ])
+
+    @runAction(action)
+
     @setTouchEnabled(true)
     true
 
-  update: (dt) ->
-    if not @isRunning
-      @isRunning = true
-      @player.moveForward()
+  displayMessage: (text) ->
+    if text
+      @label.setVisible(true)
+      @label.setString(text)
+    else
+      @label.setVisible(false)
+    console.log(text)
 
-    @timeGauge.update(dt)
+  startLevel: ->
+    @isRunning = true
+    @player.moveForward()
+
+  levelComplete: ->
+    @isRunning = false
+    wait = cc.DelayTime.create(2)
+    progessToNextLevel = cc.CallFunc.create((-> @nextLevel()), @)
+    action = cc.Sequence.create([
+      cc.CallFunc.create((-> @displayMessage("Stage Complete")), @)
+      wait
+      progessToNextLevel
+    ])
+
+    @runAction(action)
+
+  nextLevel: ->
+    cc.Director.getInstance().replaceScene(TenSecondsScene.create(@map.getNextLevel()))
+
+  update: (dt) ->
+    if @isRunning
+      @timeGauge.update(dt)
 
   timeEllapsed: ->
     @player.stopAllActions()
@@ -153,7 +200,7 @@ TimeGauge.create = (game) ->
     @currentInventory = inventory
 
   onTouchesBegan: (touches, events) ->
-    if touches and @currentInventory
+    if touches and @isRunning and  @currentInventory
       touch = touches[0]
       tap = touch.getLocation()
       @currentInventory.useAtLocation(Math.floor(tap.x / 64), Math.floor(tap.y / 64))
@@ -169,9 +216,17 @@ TimeGauge.create = (game) ->
     true
 
 @TenSecondsScene = cc.Scene.extend
+  init: (mapKlass) ->
+    @_super()
+    @mapKlass = mapKlass
+
   onEnter: ->
     @_super()
     layer = new GameLayer()
-    layer.init()
+    layer.init(@mapKlass)
     @addChild(layer)
 
+TenSecondsScene.create = (mapKlass) ->
+  scene = new TenSecondsScene()
+  scene.init(mapKlass)
+  scene

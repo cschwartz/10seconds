@@ -28,7 +28,8 @@
         type = item.type;
         tile = this.tiles[x][y].addItem(type, item);
       }
-      return this.inventory = desc.inventory;
+      this.inventory = desc.inventory;
+      return this.nextLevel = desc.nextLevel;
     },
     playerCanMoveForward: function(player) {
       var newPosition, nextTile;
@@ -53,6 +54,9 @@
         case Map.ids.wall:
           return WallTile;
       }
+    },
+    getNextLevel: function() {
+      return this.nextLevel;
     },
     getInventory: function() {
       return this.inventory;

@@ -17,8 +17,23 @@ ChangeDirection.createIcon = (description) ->
   icon.setScale(0.8)
   icon
 
-
 ChangeDirection.create = (description) ->
   item = new ChangeDirection()
   item.init(description)
   item
+
+@Goal = cc.Sprite.extend
+  init: (description) ->
+    @_super
+    @initWithFile(Goal.icon)
+    @setPosition(cc.p(32, 32))
+
+  interact: (player, tile) ->
+    player.levelComplete()
+
+Goal.icon = goal
+
+Goal.create = (description) ->
+  goal = new Goal()
+  goal.init(description)
+  goal

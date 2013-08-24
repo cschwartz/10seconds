@@ -2,6 +2,7 @@
 @wall = "wall.png"
 @player = "player.png"
 @change_direction = "change_direction.png"
+@goal = "goal.png"
 @button_pressed = "button_pressed.png"
 @button_unpressed = "button_unpressed.png"
 @button_disabled = "button_disabled.png"
@@ -27,5 +28,8 @@
   },
   {
     src: change_direction
+  },
+  {
+    src: goal
   }
 ]

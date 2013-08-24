@@ -8,6 +8,8 @@
 
   this.change_direction = "change_direction.png";
 
+  this.goal = "goal.png";
+
   this.button_pressed = "button_pressed.png";
 
   this.button_unpressed = "button_unpressed.png";
@@ -29,6 +31,8 @@
       src: button_disabled
     }, {
       src: change_direction
+    }, {
+      src: goal
     }
   ];
 

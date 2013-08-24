@@ -11,16 +11,15 @@
     level = 
       cols: cols,
       items: [
-#        {x: 1, y: 5, type: ChangeDirection, newDirection: 90},
-        {x: 5, y: 5, type: ChangeDirection, newDirection: 180},
-        {x: 5, y: 1, type: ChangeDirection, newDirection: 270},
-        {x: 1, y: 1, type: ChangeDirection, newDirection: 0},
+        {x: 1, y: 5, type: ChangeDirection, newDirection: 90},
+        {x: 5, y: 5, type: Goal},
       ]
       inventory: [
         {type: ChangeDirection, newDirection: 90, amount: 1},
         {type: ChangeDirection, newDirection: 180, amount: 1},
         {type: ChangeDirection, newDirection: 90, amount: 1},
       ]
+      nextLevel: MapOne
     level
 
   isBorder: (x, y) ->

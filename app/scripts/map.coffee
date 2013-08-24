@@ -25,6 +25,7 @@
       tile = @tiles[x][y].addItem(type, item)
     
     @inventory = desc.inventory
+    @nextLevel = desc.nextLevel
 
   playerCanMoveForward: (player) ->
     newPosition = player.getNextTilePosition()
@@ -45,6 +46,9 @@
     switch id
       when Map.ids.empty then EmptyTile
       when Map.ids.wall then WallTile
+
+  getNextLevel: ->
+    @nextLevel
 
   getInventory: ->
     @inventory
