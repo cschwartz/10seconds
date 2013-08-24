@@ -18,6 +18,7 @@
         this.setSelectedIndex(2);
         return this.setEnabled(false);
       } else {
+        this.description.available = true;
         this.icon = description.type.createIcon(description);
         this.addChild(this.icon, 1);
         return true;
@@ -25,16 +26,14 @@
     },
     useAtLocation: function(x, y) {
       this.game.addItem(x, y, this.description.type, this.description);
-      this.description.amount--;
-      if (this.description.amount === 0) {
-        this.setEnabled(false);
-        this.setSelectedIndex(2);
-        this.icon.setOpacity(127);
-        return this.game.setCurrentInventory(void 0);
-      }
+      this.description.available = false;
+      this.setEnabled(false);
+      this.setSelectedIndex(2);
+      this.icon.setOpacity(127);
+      return this.game.setCurrentInventory(void 0);
     },
     disable: function() {
-      if (this.description.amount !== 0) {
+      if (this.description.available) {
         return this.setSelectedIndex(0);
       }
     },
@@ -124,11 +123,13 @@
   };
 
   this.GameLayer = cc.Layer.extend({
-    init: function() {
+    init: function(mapKlass) {
+      var action, screenSize, start, wait;
       this._super();
-      this.map = MapOne.create();
+      screenSize = cc.Director.getInstance().getWinSize();
+      this.map = mapKlass.create();
       this.addChild(this.map);
-      this.player = Player.create(this.map, 1, 1);
+      this.player = Player.create(this, this.map, 1, 1);
       this.addChild(this.player);
       this.timeGauge = TimeGauge.create(this);
       this.addChild(this.timeGauge);
@@ -136,15 +137,65 @@
       this.addChild(this.itemBar);
       this.schedule(this.update);
       this.isRunning = false;
+      this.label = cc.LabelTTF.create("3", "Times New Roman", 64, cc.c3b(255, 0, 0));
+      this.label.setPosition(cc.p(screenSize.width / 2, screenSize.height * 3 / 4));
+      this.label.setVisible(false);
+      this.addChild(this.label);
+      wait = cc.DelayTime.create(1);
+      start = cc.CallFunc.create((function() {
+        return this.startLevel();
+      }), this);
+      action = cc.Sequence.create([
+        cc.CallFunc.create((function() {
+          return this.displayMessage("3");
+        }), this), wait.copy(), cc.CallFunc.create((function() {
+          return this.displayMessage("2");
+        }), this), wait.copy(), cc.CallFunc.create((function() {
+          return this.displayMessage("1");
+        }), this), wait.copy(), cc.CallFunc.create((function() {
+          return this.displayMessage("Go");
+        }), this), wait.copy(), cc.CallFunc.create((function() {
+          return this.displayMessage(void 0);
+        }), this), start
+      ]);
+      this.runAction(action);
       this.setTouchEnabled(true);
       return true;
     },
-    update: function(dt) {
-      if (!this.isRunning) {
-        this.isRunning = true;
-        this.player.moveForward();
+    displayMessage: function(text) {
+      if (text) {
+        this.label.setVisible(true);
+        this.label.setString(text);
+      } else {
+        this.label.setVisible(false);
       }
-      return this.timeGauge.update(dt);
+      return console.log(text);
+    },
+    startLevel: function() {
+      this.isRunning = true;
+      return this.player.moveForward();
+    },
+    levelComplete: function() {
+      var action, progessToNextLevel, wait;
+      this.isRunning = false;
+      wait = cc.DelayTime.create(2);
+      progessToNextLevel = cc.CallFunc.create((function() {
+        return this.nextLevel();
+      }), this);
+      action = cc.Sequence.create([
+        cc.CallFunc.create((function() {
+          return this.displayMessage("Stage Complete");
+        }), this), wait, progessToNextLevel
+      ]);
+      return this.runAction(action);
+    },
+    nextLevel: function() {
+      return cc.Director.getInstance().replaceScene(TenSecondsScene.create(this.map.getNextLevel()));
+    },
+    update: function(dt) {
+      if (this.isRunning) {
+        return this.timeGauge.update(dt);
+      }
     },
     timeEllapsed: function() {
       return this.player.stopAllActions();
@@ -163,7 +214,7 @@
     },
     onTouchesBegan: function(touches, events) {
       var tap, touch;
-      if (touches && this.currentInventory) {
+      if (touches && this.isRunning && this.currentInventory) {
         touch = touches[0];
         tap = touch.getLocation();
         this.currentInventory.useAtLocation(Math.floor(tap.x / 64), Math.floor(tap.y / 64));
@@ -182,13 +233,24 @@
   });
 
   this.TenSecondsScene = cc.Scene.extend({
+    init: function(mapKlass) {
+      this._super();
+      return this.mapKlass = mapKlass;
+    },
     onEnter: function() {
       var layer;
       this._super();
       layer = new GameLayer();
-      layer.init();
+      layer.init(this.mapKlass);
       return this.addChild(layer);
     }
   });
+
+  TenSecondsScene.create = function(mapKlass) {
+    var scene;
+    scene = new TenSecondsScene();
+    scene.init(mapKlass);
+    return scene;
+  };
 
 }).call(this);

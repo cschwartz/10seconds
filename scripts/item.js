@@ -30,4 +30,24 @@
     return item;
   };
 
+  this.Goal = cc.Sprite.extend({
+    init: function(description) {
+      this._super;
+      this.initWithFile(Goal.icon);
+      return this.setPosition(cc.p(32, 32));
+    },
+    interact: function(player, tile) {
+      return player.levelComplete();
+    }
+  });
+
+  Goal.icon = goal;
+
+  Goal.create = function(description) {
+    var goal;
+    goal = new Goal();
+    goal.init(description);
+    return goal;
+  };
+
 }).call(this);
