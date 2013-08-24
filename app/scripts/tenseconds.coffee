@@ -1,24 +1,93 @@
+@Player = cc.Sprite.extend
+  init: (map, x, y) ->
+    @_super()
+    @map = map
+    @initWithFile("player.png")
+    @setPosition(cc.p(x * 64 + 32, y * 64 + 32))
+    @speed = 1/2 #2 tiles per second
+
+  canMoveForward: ->
+    @map.playerCanMoveForward(@)
+
+  moveForward: ->
+    console.log("MovedForward")
+    @runAction cc.Sequence.create [
+      cc.MoveBy.create(@speed, @getRotatedForwardDirection())
+      cc.CallFunc.create((-> @moveComplete()), @)
+    ]
+
+  rotate: (angle, tile) ->
+    angleToRotate = (angle - @getRotation()) % 360
+    if angleToRotate < 0
+      angleToRotate += 360
+    @runAction cc.Sequence.create [
+      cc.RotateBy.create(@speed, angleToRotate)
+      cc.CallFunc.create((-> @itemCompleted(tile)), @)
+    ]
+
+  getTilePosition: ->
+    cc.p(Math.floor(@getPositionX() / 64), Math.floor(@getPositionY() / 64))
+
+  getNextTilePosition: ->
+    nextPixelPosition = cc.pAdd(@getPosition(), @getRotatedForwardDirection())
+    cc.p(Math.floor(nextPixelPosition.x / 64), Math.floor(nextPixelPosition.y / 64))
+
+  getRotatedForwardDirection: ->
+    forward = cc.p(0, 64)
+    angle = @getRotation()
+    rotatedDirection = cc.pRotateByAngle(forward, cc.p(0, 0), cc.DEGREES_TO_RADIANS(-angle))
+
+  itemCompleted: (tile) ->
+    tile.itemCompleted(@)
+
+  moveComplete: ->
+    @map.playerMoveCompleted(@)
+
+Player.create = (map, x, y) ->
+  player = new Player()
+  player.init(map, x, y)
+  player
+
+
 @GameLayer = cc.Layer.extend
-    init: ->
-      @_super()
+  init: ->
+    @_super()
 
-      @setTouchEnabled(true)
-      true
+    @map = MapOne.create()
+    @addChild(@map)
 
-    menuCloseCallback: (sender) ->
-      true
+    @player = Player.create(@map, 1, 1)
+    @addChild(@player)
 
-    onTouchesBegan: (touches, events) ->
-      true
+    @schedule(@update)
 
-    onTouchesMoved: (touches, event) ->
-      true
+    @isRunning = false
 
-    onTouchesEnded: (touches, event) ->
-      true
+    @setTouchEnabled(true)
+    true
 
-    onTouchesCancelled: (touches, event) ->
-      true
+  update: (dt) ->
+    if not @isRunning
+      @isRunning = true
+      @player.moveForward()
+
+  createLevel: (levelName) ->
+    true
+
+  menuCloseCallback: (sender) ->
+    true
+
+  onTouchesBegan: (touches, events) ->
+    true
+
+  onTouchesMoved: (touches, event) ->
+    true
+
+  onTouchesEnded: (touches, event) ->
+    true
+
+  onTouchesCancelled: (touches, event) ->
+    true
 
 @TenSecondsScene = cc.Scene.extend
   onEnter: ->

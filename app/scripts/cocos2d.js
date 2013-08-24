@@ -33,12 +33,16 @@
         showFPS:true,
         frameRate:60,
         loadExtension:false,
-        renderMode:0,       //Choose of RenderMode: 0(default), 1(Canvas only), 2(WebGL only)
+        renderMode:2,       //Choose of RenderMode: 0(default), 1(Canvas only), 2(WebGL only)
         tag:'gameCanvas', //the dom element to run cocos2d on
         //engineDir:'scripts/vendor/cocos2d/',
         SingleEngineFile:'scripts/vendor/cocos2d-html5.min.js',
         appFiles:[
             'scripts/resource.js',
+            'scripts/tile.js',
+            'scripts/item.js',
+            'scripts/map.js',
+            'scripts/map_one.js',
             'scripts/tenseconds.js'
         ]
     };
