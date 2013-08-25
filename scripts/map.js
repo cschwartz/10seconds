@@ -29,7 +29,8 @@
         tile = this.tiles[x][y].addItem(type, item);
       }
       this.inventory = desc.inventory;
-      return this.nextLevel = desc.nextLevel;
+      this.nextLevel = desc.nextLevel;
+      return this.playerStart = desc.playerStart;
     },
     playerCanMoveForward: function(player) {
       var newPosition, nextTile;
@@ -44,8 +45,7 @@
       return currentTile.playerEntered(player);
     },
     addItem: function(x, y, type, item) {
-      var tile;
-      return tile = this.tiles[x][y].addItem(type, item);
+      return this.tiles[x][y].addItem(type, item);
     },
     idToTile: function(id) {
       switch (id) {
@@ -60,6 +60,25 @@
     },
     getInventory: function() {
       return this.inventory;
+    },
+    getPlayerStart: function() {
+      return this.playerStart;
+    },
+    isBorder: function(x, y) {
+      return x === 0 || x === (this.numCols - 1) || y === 0 || y === (this.numRows - 1);
+    },
+    emptyMap: function() {
+      var col, cols, tileId, x, y, _i, _j, _ref, _ref1;
+      cols = [];
+      for (x = _i = 0, _ref = this.numCols; 0 <= _ref ? _i < _ref : _i > _ref; x = 0 <= _ref ? ++_i : --_i) {
+        col = [];
+        for (y = _j = 0, _ref1 = this.numRows; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; y = 0 <= _ref1 ? ++_j : --_j) {
+          tileId = this.isBorder(x, y) ? Map.ids.wall : Map.ids.empty;
+          col.push(tileId);
+        }
+        cols.push(col);
+      }
+      return cols;
     }
   });
 
