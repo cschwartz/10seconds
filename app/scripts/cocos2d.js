@@ -42,6 +42,8 @@
             'scripts/player.js',
             'scripts/tile.js',
             'scripts/item.js',
+            'scripts/itembar.js',
+            'scripts/timegauge.js',
             'scripts/map.js',
             'scripts/map_one.js',
             'scripts/tenseconds.js'
