@@ -1,6 +1,7 @@
-@GameLayer = cc.Layer.extend
+@GameLayer = cc.LayerColor.extend
   init: (mapKlass) ->
     @_super()
+    @setColor(cc.c3b(149, 165, 166))
 
     @mapKlass = mapKlass
     @map = mapKlass.create()
@@ -9,13 +10,20 @@
     @player = Player.create(@, @map)
     @addChild(@player)
 
-    @timeGauge = TimeGauge.create(@)
-    @addChild(@timeGauge)
-
-    @itemBar = ItemBar.create(@, @map.getInventory())
-    @addChild(@itemBar)
+    @isDemo = @map.isDemoMode()
 
     @createLabel()
+
+    if not @isDemo
+      @timeGauge = TimeGauge.create(@)
+      @addChild(@timeGauge)
+
+      @itemBar = ItemBar.create(@, @map.getInventory())
+      @addChild(@itemBar)
+    else
+      @displayMessage("Click to Start")
+
+
 
     @schedule(@update)
 
@@ -29,26 +37,30 @@
   createLabel: ->
     screenSize = cc.Director.getInstance().getWinSize()
 
-    @label = cc.LabelTTF.create("3", "Times New Roman", 64, cc.c3b(255, 0, 0))
-    @label.setPosition(cc.p(screenSize.width/2, screenSize.height*3/4))
+    @label = cc.LabelTTF.create("3", "Montserrat", 64)
+    @label.setColor(cc.c3b(192, 57, 43))
+    @label.setPosition(cc.p(screenSize.width/2, screenSize.height/2))
     @label.setVisible(false)
     @addChild(@label)
 
   beginCountdown: ->
-    wait = cc.DelayTime.create(1)
     start = cc.CallFunc.create((-> @startLevel()), @)
-    action = cc.Sequence.create([
-      cc.CallFunc.create((-> @displayMessage("3")), @)
-      wait.copy()
-      cc.CallFunc.create((-> @displayMessage("2")), @)
-      wait.copy()
-      cc.CallFunc.create((-> @displayMessage("1")), @)
-      wait.copy()
-      cc.CallFunc.create((-> @displayMessage("Go")), @)
-      wait.copy()
-      cc.CallFunc.create((-> @displayMessage(undefined)), @)
-      start
-    ])
+    if not @isDemo
+      wait = cc.DelayTime.create(1)
+      action = cc.Sequence.create([
+        cc.CallFunc.create((-> @displayMessage("3")), @)
+        wait.copy()
+        cc.CallFunc.create((-> @displayMessage("2")), @)
+        wait.copy()
+        cc.CallFunc.create((-> @displayMessage("1")), @)
+        wait.copy()
+        cc.CallFunc.create((-> @displayMessage("Go")), @)
+        wait.copy()
+        cc.CallFunc.create((-> @displayMessage(undefined)), @)
+        start
+      ])
+    else
+      action = start
 
     @runAction(action)
 
@@ -79,10 +91,14 @@
     cc.Director.getInstance().replaceScene(TenSecondsScene.create(@mapKlass))
 
   nextLevel: ->
-    cc.Director.getInstance().replaceScene(TenSecondsScene.create(@map.getNextLevel()))
+    nextMap = @map.getNextLevel()
+    if nextMap
+      cc.Director.getInstance().replaceScene(TenSecondsScene.create(@map.getNextLevel()))
+    else
+      cc.Director.getInstance().replaceScene(EndgameScene.create())
 
   update: (dt) ->
-    if @isRunning
+    if @isRunning and not @isDemo
       @timeGauge.update(dt)
 
   timeEllapsed: ->
@@ -112,14 +128,17 @@
     @currentInventory = inventory
 
   onTouchesBegan: (touches, events) ->
-    if touches and @isRunning and  @currentInventory
-      touch = touches[0]
-      tap = touch.getLocation()
-      x = Math.floor(tap.x / 64)
-      y = Math.floor(tap.y / 64)
-      touch = touches[0]
-      tap = touch.getLocation()
-      @currentInventory.useAtLocation(x, y)
+    if @isDemo
+      cc.Director.getInstance().replaceScene(TenSecondsScene.create(@map.getNextLevel()))
+    else
+      if touches and @isRunning and  @currentInventory
+        touch = touches[0]
+        tap = touch.getLocation()
+        x = Math.floor(tap.x / 64)
+        y = Math.floor(tap.y / 64)
+        touch = touches[0]
+        tap = touch.getLocation()
+        @currentInventory.useAtLocation(x, y)
     true
 
   onTouchesMoved: (touches, event) ->
@@ -145,4 +164,46 @@
 TenSecondsScene.create = (mapKlass) ->
   scene = new TenSecondsScene()
   scene.init(mapKlass)
+  scene
+
+
+EndgameLayer = cc.LayerColor.extend
+  init: ->
+    @_super()
+    @setColor(cc.c3b(149, 165, 166))
+
+    screenSize = cc.Director.getInstance().getWinSize()
+
+    label = cc.LabelTTF.create("The End", "Montserrat Subrayada", 72)
+    label.setColor(cc.c3b(0, 0, 0))
+    label.setPosition(cc.p(screenSize.width/2, screenSize.height*3/4))
+    @addChild(label)
+
+    label = cc.LabelTTF.create("Thank you for playing, I hope you enjoyed it.", "Montserrat", 24)
+    label.setColor(cc.c3b(0, 0, 0))
+    label.setPosition(cc.p(screenSize.width/2, screenSize.height/2))
+    @addChild(label)
+
+    label = cc.LabelTTF.create("Click anywhere to restart.", "Montserrat", 24)
+    label.setColor(cc.c3b(0, 0, 0))
+    label.setPosition(cc.p(screenSize.width/2, screenSize.height/2 - 32))
+    @addChild(label)
+    @setTouchEnabled(true)
+
+  onTouchesBegan: (touches, event) ->
+    if touches
+      cc.Director.getInstance().replaceScene(TenSecondsScene.create(MapDemo))
+
+@EndgameScene = cc.Scene.extend
+  init: (mapKlass) ->
+    @_super()
+  onEnter: ->
+    @_super()
+    layer = new EndgameLayer()
+    layer.init()
+    @addChild(layer)
+
+EndgameScene.create = (mapKlass) ->
+  scene = new EndgameScene()
+  scene.init()
   scene

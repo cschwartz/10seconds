@@ -12,12 +12,12 @@
         x: 1
         y: 8
         rotation: 90
-      nextLevel: MapTwo
+      nextLevel: MapThree
     level
 
 
 MapTwo.create = ->
-  map = new MapThree()
+  map = new MapTwo()
   map.init()
   map
 

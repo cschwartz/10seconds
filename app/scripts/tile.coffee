@@ -5,28 +5,39 @@
     @setPosition(cc.p(x * 64, y * 64))
     @setAnchorPoint(cc.p(0, 0))
 
+    @position = cc.p(x, y)
+
     @items = []
     
-  addItem: (item, description) ->
-    newItem = item.create(description)
+  addItem: (item, description, map) ->
+    newItem = item.create(description, map, @)
     @addChild(newItem)
     @items.push(newItem)
     if @currentPlayer
       @itemCompleted(@currentPlayer)
-    true
+    newItem
+
+  getPosition: ->
+    @position
 
   playerEntered: (player) ->
     @currentPlayer = player
     @currentItemIndex = 0
-    @itemCompleted(player)
+    @itemCompleted()
 
-  itemCompleted: (player) ->
+  reprocessItems: ->
+    if @currentPlayer
+      @currentItemIndex = 0
+      @itemCompleted()
+
+  itemCompleted: ->
     if @currentItemIndex < @items.length
       currentItem = @items[@currentItem]
-      @handleCurrentItem(player)
+      @handleCurrentItem(@currentPlayer)
       @currentItemIndex++
     else
-      if player.canMoveForward()
+      if @currentPlayer.canMoveForward()
+        player = @currentPlayer
         @currentPlayer = undefined
         player.moveForward()
 
@@ -49,7 +60,7 @@ EmptyTile.create = (x, y) ->
   init: (x, y) ->
     @_super(wall, x, y)
 
-  addItem: (item, description) ->
+  addItem: (item, description, map) ->
     false
 
   canEnter: ->

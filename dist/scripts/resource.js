@@ -10,11 +10,21 @@
 
   this.goal = "goal.png";
 
+  this.speedUp = "speedup.png";
+
   this.button_pressed = "button_pressed.png";
 
   this.button_unpressed = "button_unpressed.png";
 
   this.button_disabled = "button_disabled.png";
+
+  this.portal_a = "portal_a.png";
+
+  this.portal_a_closed = "portal_a_closed.png";
+
+  this.portal_b = "portal_b.png";
+
+  this.portal_b_closed = "portal_b_closed.png";
 
   this.g_resources = [
     {
@@ -33,6 +43,16 @@
       src: change_direction
     }, {
       src: goal
+    }, {
+      src: speedUp
+    }, {
+      src: portal_a
+    }, {
+      src: portal_b
+    }, {
+      src: portal_a_closed
+    }, {
+      src: portal_b_closed
     }
   ];
 

@@ -5,6 +5,8 @@
     @numCols = 16
     @numRows = 11
 
+    @itemsByTag = {}
+
     desc = @description()
     @tiles = []
     for x in [0...16]
@@ -22,11 +24,13 @@
       x = item.x
       y = item.y
       type = item.type
-      tile = @tiles[x][y].addItem(type, item)
+      tile = @addItem(x, y, type, item)
     
+    @isDemo= desc.isDemo
     @inventory = desc.inventory
     @nextLevel = desc.nextLevel
     @playerStart = desc.playerStart
+    true
 
   playerCanMoveForward: (player) ->
     newPosition = player.getNextTilePosition()
@@ -40,13 +44,23 @@
     currentTile.playerEntered(player)
   
   addItem: (x, y, type, item) ->
-    @tiles[x][y].addItem(type, item)
+    item = @tiles[x][y].addItem(type, item, @)
+    if item
+      tag = item.getTag()
+      if tag
+        @itemsByTag[tag] = item
+    item
 
+  getItemByTag: (tag) ->
+    @itemsByTag[tag]
 
   idToTile: (id) ->
     switch id
       when Map.ids.empty then EmptyTile
       when Map.ids.wall then WallTile
+
+  isDemoMode: ->
+    return @isDemo
 
   getNextLevel: ->
     @nextLevel

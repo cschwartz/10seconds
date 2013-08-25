@@ -42,7 +42,7 @@
           y: 1,
           rotation: 0
         },
-        nextLevel: MapThree
+        nextLevel: MapFour
       };
       return level;
     }
