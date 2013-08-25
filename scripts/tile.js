@@ -6,31 +6,42 @@
       this.initWithFile(filename);
       this.setPosition(cc.p(x * 64, y * 64));
       this.setAnchorPoint(cc.p(0, 0));
+      this.position = cc.p(x, y);
       return this.items = [];
     },
-    addItem: function(item, description) {
+    addItem: function(item, description, map) {
       var newItem;
-      newItem = item.create(description);
+      newItem = item.create(description, map, this);
       this.addChild(newItem);
       this.items.push(newItem);
       if (this.currentPlayer) {
         this.itemCompleted(this.currentPlayer);
       }
-      return true;
+      return newItem;
+    },
+    getPosition: function() {
+      return this.position;
     },
     playerEntered: function(player) {
       this.currentPlayer = player;
       this.currentItemIndex = 0;
-      return this.itemCompleted(player);
+      return this.itemCompleted();
     },
-    itemCompleted: function(player) {
-      var currentItem;
+    reprocessItems: function() {
+      if (this.currentPlayer) {
+        this.currentItemIndex = 0;
+        return this.itemCompleted();
+      }
+    },
+    itemCompleted: function() {
+      var currentItem, player;
       if (this.currentItemIndex < this.items.length) {
         currentItem = this.items[this.currentItem];
-        this.handleCurrentItem(player);
+        this.handleCurrentItem(this.currentPlayer);
         return this.currentItemIndex++;
       } else {
-        if (player.canMoveForward()) {
+        if (this.currentPlayer.canMoveForward()) {
+          player = this.currentPlayer;
           this.currentPlayer = void 0;
           return player.moveForward();
         }
@@ -61,7 +72,7 @@
     init: function(x, y) {
       return this._super(wall, x, y);
     },
-    addItem: function(item, description) {
+    addItem: function(item, description, map) {
       return false;
     },
     canEnter: function() {

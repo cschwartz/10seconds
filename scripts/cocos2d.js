@@ -30,13 +30,13 @@
         COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug
         box2d:false,
         chipmunk:false,
-        showFPS:true,
+        showFPS:false,
         frameRate:60,
         loadExtension:false,
         renderMode:0,       //Choose of RenderMode: 0(default), 1(Canvas only), 2(WebGL only)
         tag:'gameCanvas', //the dom element to run cocos2d on
         //engineDir:'scripts/vendor/cocos2d/',
-         SingleEngineFile:'scripts/vendor/cocos2d-html5.min.js',
+        SingleEngineFile:'scripts/vendor/cocos2d-html5.min.js',
         appFiles:[
             'scripts/resource.js',
             'scripts/player.js',
@@ -45,9 +45,15 @@
             'scripts/itembar.js',
             'scripts/timegauge.js',
             'scripts/map.js',
+            'scripts/map_demo.js',
             'scripts/map_one.js',
             'scripts/map_two.js',
             'scripts/map_three.js',
+            'scripts/map_four.js',
+            'scripts/map_five.js',
+            'scripts/map_six.js',
+            'scripts/map_seven.js',
+            'scripts/map_eight.js',
             'scripts/tenseconds.js'
         ]
     };

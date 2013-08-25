@@ -43,10 +43,10 @@ var cocos2dApp = cc.Application.extend({
         // initialize director
         var designSize = new cc.Size(1024, 768);
         var director = cc.Director.getInstance();
-        var openGLView = director.getOpenGLView();
-        openGLView.setDesignResolutionSize(designSize.width, designSize.height, cc.RESOLUTION_POLICY.SHOW_ALL);
-        var screenSize = openGLView.getFrameSize();
-        director.setContentScaleFactor(screenSize.height / designSize.height);
+        //var openGLView = director.getOpenGLView();
+        //openGLView.setDesignResolutionSize(designSize.width, designSize.height, cc.RESOLUTION_POLICY.SHOW_ALL);
+        //var screenSize = openGLView.getFrameSize();
+        //director.setContentScaleFactor(screenSize.height / designSize.height);
 
         var resourcePaths = [];
         var fileUtils = cc.FileUtils.getInstance();
@@ -65,7 +65,7 @@ var cocos2dApp = cc.Application.extend({
 
         //load resources
         cc.LoaderScene.preload(g_resources, function () {
-            director.replaceScene(this.startScene.create(MapThree));
+            director.replaceScene(this.startScene.create(MapDemo));
         }, this);
 
         return true;
