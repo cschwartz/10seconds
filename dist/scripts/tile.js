@@ -14,8 +14,9 @@
       this.addChild(newItem);
       this.items.push(newItem);
       if (this.currentPlayer) {
-        return this.itemCompleted(this.currentPlayer);
+        this.itemCompleted(this.currentPlayer);
       }
+      return true;
     },
     playerEntered: function(player) {
       this.currentPlayer = player;
@@ -59,6 +60,9 @@
   this.WallTile = Tile.extend({
     init: function(x, y) {
       return this._super(wall, x, y);
+    },
+    addItem: function(item, description) {
+      return false;
     },
     canEnter: function() {
       return false;

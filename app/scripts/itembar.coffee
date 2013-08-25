@@ -20,12 +20,13 @@
       true
 
   useAtLocation: (x, y) ->
-    @game.addItem(x, y, @description.type,  @description)
-    @description.available = false
-    @setEnabled(false)
-    @setSelectedIndex(2)
-    @icon.setOpacity(127)
-    @game.setCurrentInventory(undefined)
+    if @game.addItem(x, y, @description.type,  @description)
+      @description.available = false
+      @setEnabled(false)
+      @setSelectedIndex(2)
+      @icon.setOpacity(127)
+      @game.setCurrentInventory(undefined)
+    true
 
   disable: ->
     if @description.available

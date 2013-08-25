@@ -26,6 +26,7 @@
     
     @inventory = desc.inventory
     @nextLevel = desc.nextLevel
+    @playerStart = desc.playerStart
 
   playerCanMoveForward: (player) ->
     newPosition = player.getNextTilePosition()
@@ -39,7 +40,7 @@
     currentTile.playerEntered(player)
   
   addItem: (x, y, type, item) ->
-    tile = @tiles[x][y].addItem(type, item)
+    @tiles[x][y].addItem(type, item)
 
 
   idToTile: (id) ->
@@ -52,6 +53,23 @@
 
   getInventory: ->
     @inventory
+
+  getPlayerStart: ->
+    @playerStart
+
+  isBorder: (x, y) ->
+    x == 0 || x == (@numCols - 1)|| y == 0 || y == (@numRows - 1)
+
+  emptyMap: ->
+    cols = []
+    for x in [0...@numCols]
+      col = []
+      for y in [0...@numRows]
+        tileId = if @isBorder(x, y) then Map.ids.wall else Map.ids.empty
+        col.push(tileId)
+      cols.push(col)
+    cols
+
 
 @Map.ids = {
   empty: 0,

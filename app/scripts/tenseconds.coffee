@@ -2,12 +2,11 @@
   init: (mapKlass) ->
     @_super()
 
-    screenSize = cc.Director.getInstance().getWinSize()
-
+    @mapKlass = mapKlass
     @map = mapKlass.create()
     @addChild(@map)
 
-    @player = Player.create(@, @map, 1, 1)
+    @player = Player.create(@, @map)
     @addChild(@player)
 
     @timeGauge = TimeGauge.create(@)
@@ -16,15 +15,26 @@
     @itemBar = ItemBar.create(@, @map.getInventory())
     @addChild(@itemBar)
 
+    @createLabel()
+
     @schedule(@update)
 
     @isRunning = false
+
+    @beginCountdown()
+
+    @setTouchEnabled(true)
+    true
+
+  createLabel: ->
+    screenSize = cc.Director.getInstance().getWinSize()
 
     @label = cc.LabelTTF.create("3", "Times New Roman", 64, cc.c3b(255, 0, 0))
     @label.setPosition(cc.p(screenSize.width/2, screenSize.height*3/4))
     @label.setVisible(false)
     @addChild(@label)
 
+  beginCountdown: ->
     wait = cc.DelayTime.create(1)
     start = cc.CallFunc.create((-> @startLevel()), @)
     action = cc.Sequence.create([
@@ -42,16 +52,12 @@
 
     @runAction(action)
 
-    @setTouchEnabled(true)
-    true
-
   displayMessage: (text) ->
     if text
       @label.setVisible(true)
       @label.setString(text)
     else
       @label.setVisible(false)
-    console.log(text)
 
   startLevel: ->
     @isRunning = true
@@ -69,6 +75,9 @@
 
     @runAction(action)
 
+  retryLevel: ->
+    cc.Director.getInstance().replaceScene(TenSecondsScene.create(@mapKlass))
+
   nextLevel: ->
     cc.Director.getInstance().replaceScene(TenSecondsScene.create(@map.getNextLevel()))
 
@@ -78,6 +87,17 @@
 
   timeEllapsed: ->
     @player.stopAllActions()
+    @isRunning = false
+    wait = cc.DelayTime.create(2)
+    retryCurrentLevel = cc.CallFunc.create((-> @retryLevel()), @)
+    action = cc.Sequence.create([
+      cc.CallFunc.create((-> @displayMessage("Time Over")), @)
+      wait
+      retryCurrentLevel
+    ])
+
+    @runAction(action)
+
 
   createLevel: (levelName) ->
     true
@@ -95,7 +115,11 @@
     if touches and @isRunning and  @currentInventory
       touch = touches[0]
       tap = touch.getLocation()
-      @currentInventory.useAtLocation(Math.floor(tap.x / 64), Math.floor(tap.y / 64))
+      x = Math.floor(tap.x / 64)
+      y = Math.floor(tap.y / 64)
+      touch = touches[0]
+      tap = touch.getLocation()
+      @currentInventory.useAtLocation(x, y)
     true
 
   onTouchesMoved: (touches, event) ->

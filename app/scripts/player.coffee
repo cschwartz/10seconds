@@ -1,10 +1,12 @@
 @Player = cc.Sprite.extend
-  init: (game, map, x, y) ->
+  init: (game, map) ->
     @_super()
     @game = game
     @map = map
     @initWithFile("player.png")
-    @setPosition(cc.p(x * 64 + 32, y * 64 + 32))
+    playerStart = @map.getPlayerStart()
+    @setPosition(cc.p(playerStart.x * 64 + 32, playerStart.y * 64 + 32))
+    @setRotation(playerStart.rotation)
     @speed = 1/4 #2 tiles per second
 
   canMoveForward: ->

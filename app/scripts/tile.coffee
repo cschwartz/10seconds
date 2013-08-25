@@ -13,6 +13,7 @@
     @items.push(newItem)
     if @currentPlayer
       @itemCompleted(@currentPlayer)
+    true
 
   playerEntered: (player) ->
     @currentPlayer = player
@@ -47,6 +48,9 @@ EmptyTile.create = (x, y) ->
 @WallTile = Tile.extend
   init: (x, y) ->
     @_super(wall, x, y)
+
+  addItem: (item, description) ->
+    false
 
   canEnter: ->
     false
