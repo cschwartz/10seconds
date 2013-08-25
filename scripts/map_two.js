@@ -24,7 +24,7 @@
           y: 8,
           rotation: 90
         },
-        nextLevel: MapTwo
+        nextLevel: MapThree
       };
       return level;
     }
@@ -32,7 +32,7 @@
 
   MapTwo.create = function() {
     var map;
-    map = new MapThree();
+    map = new MapTwo();
     map.init();
     return map;
   };

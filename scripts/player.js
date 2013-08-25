@@ -10,14 +10,14 @@
       playerStart = this.map.getPlayerStart();
       this.setPosition(cc.p(playerStart.x * 64 + 32, playerStart.y * 64 + 32));
       this.setRotation(playerStart.rotation);
-      return this.speed = 1 / 4;
+      return this.speed = 4;
     },
     canMoveForward: function() {
       return this.map.playerCanMoveForward(this);
     },
     moveForward: function() {
       return this.runAction(cc.Sequence.create([
-        cc.MoveBy.create(this.speed, this.getRotatedForwardDirection()), cc.CallFunc.create((function() {
+        cc.MoveBy.create(1 / this.speed, this.getRotatedForwardDirection()), cc.CallFunc.create((function() {
           return this.moveComplete();
         }), this)
       ]));
@@ -34,7 +34,7 @@
       }
       if (angleToRotate !== 0) {
         return this.runAction(cc.Sequence.create([
-          cc.RotateBy.create(this.speed, angleToRotate), cc.CallFunc.create((function() {
+          cc.RotateBy.create(1 / this.speed, angleToRotate), cc.CallFunc.create((function() {
             return this.itemCompleted(tile);
           }), this)
         ]));
@@ -45,6 +45,21 @@
           }), this)
         ]));
       }
+    },
+    speedUp: function(tile) {
+      this.speed *= 4;
+      return this.runAction(cc.Sequence.create([
+        cc.CallFunc.create((function() {
+          return this.itemCompleted(tile);
+        }), this)
+      ]));
+    },
+    teleport: function(destination, tile) {
+      return this.runAction(cc.Sequence.create([
+        cc.Place.create(cc.p(32 + destination.x * 64, 32 + destination.y * 64)), cc.CallFunc.create((function() {
+          return this.itemCompleted(tile);
+        }), this)
+      ]));
     },
     getTilePosition: function() {
       return cc.p(Math.floor(this.getPositionX() / 64), Math.floor(this.getPositionY() / 64));
@@ -61,7 +76,7 @@
       return rotatedDirection = cc.pRotateByAngle(forward, cc.p(0, 0), cc.DEGREES_TO_RADIANS(-angle));
     },
     itemCompleted: function(tile) {
-      return tile.itemCompleted(this);
+      return tile.itemCompleted();
     },
     moveComplete: function() {
       return this.map.playerMoveCompleted(this);

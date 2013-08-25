@@ -6,6 +6,7 @@
       this._super();
       this.numCols = 16;
       this.numRows = 11;
+      this.itemsByTag = {};
       desc = this.description();
       this.tiles = [];
       for (x = _i = 0; _i < 16; x = ++_i) {
@@ -26,11 +27,13 @@
         x = item.x;
         y = item.y;
         type = item.type;
-        tile = this.tiles[x][y].addItem(type, item);
+        tile = this.addItem(x, y, type, item);
       }
+      this.isDemo = desc.isDemo;
       this.inventory = desc.inventory;
       this.nextLevel = desc.nextLevel;
-      return this.playerStart = desc.playerStart;
+      this.playerStart = desc.playerStart;
+      return true;
     },
     playerCanMoveForward: function(player) {
       var newPosition, nextTile;
@@ -45,7 +48,18 @@
       return currentTile.playerEntered(player);
     },
     addItem: function(x, y, type, item) {
-      return this.tiles[x][y].addItem(type, item);
+      var tag;
+      item = this.tiles[x][y].addItem(type, item, this);
+      if (item) {
+        tag = item.getTag();
+        if (tag) {
+          this.itemsByTag[tag] = item;
+        }
+      }
+      return item;
+    },
+    getItemByTag: function(tag) {
+      return this.itemsByTag[tag];
     },
     idToTile: function(id) {
       switch (id) {
@@ -54,6 +68,9 @@
         case Map.ids.wall:
           return WallTile;
       }
+    },
+    isDemoMode: function() {
+      return this.isDemo;
     },
     getNextLevel: function() {
       return this.nextLevel;
