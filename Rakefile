@@ -23,6 +23,14 @@ task :copy_assets do
   end
 end
 
+task :copy_css do
+  FileUtils.mkdir("dist/styles")
+  Dir["app/styles/*.css"].each do |file|
+    FileUtils.copy(file, "dist/styles/")
+  end
+end
+
+
 task :make_scriptdir do
   FileUtils.mkdir_p("dist/scripts/vendor")
 end
@@ -41,4 +49,4 @@ end
 
 task :prepare_scripts => [:make_scriptdir, :copy_javascript, :copy_vendor,  :compile_coffeescript]
 
-task :default => [:remove_dist, :make_dist, :copy_index, :copy_assets, :prepare_scripts]
+task :default => [:remove_dist, :make_dist, :copy_css, :copy_index, :copy_assets, :prepare_scripts]
