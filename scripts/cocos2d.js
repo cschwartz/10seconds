@@ -42,8 +42,12 @@
             'scripts/player.js',
             'scripts/tile.js',
             'scripts/item.js',
+            'scripts/itembar.js',
+            'scripts/timegauge.js',
             'scripts/map.js',
             'scripts/map_one.js',
+            'scripts/map_two.js',
+            'scripts/map_three.js',
             'scripts/tenseconds.js'
         ]
     };
