@@ -1,0 +1,64 @@
+body {
+  background: #95a5a6;
+
+}
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+#container {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 1024px;
+}
+
+h1 {
+  font-family: 'Montserrat Subrayada', sans-serif;
+  font-size: 72pt;
+  margin-bottom: 0px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24pt;
+  text-align: center;
+  margin-top: 8px;
+}
+
+#description {
+  font-family: 'Montserrat', sans-serif;
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-top: 32px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background-color: rgb(189, 195, 199);
+  text-align: justify;
+}
+
+#description em {
+  font-weight: 700;
+
+}
+
+#description a {
+  color: rgb(44, 62, 80);
+}
+
+.character {
+  color: rgb(155, 89, 182);
+}
+
+.time {
+  color: rgb(52, 152, 219);
+}
