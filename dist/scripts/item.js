@@ -44,8 +44,7 @@
   this.Goal = Item.extend({
     init: function(description, map, tile) {
       this._super(description, map, tile);
-      this.setScale(0.9);
-      return this.getTexture().generateMipmap();
+      return this.setScale(0.9);
     },
     interact: function(player, tile) {
       return player.levelComplete();

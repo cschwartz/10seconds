@@ -35,7 +35,6 @@ ChangeDirection.create = (description, map, tile) ->
   init: (description, map, tile) ->
     @_super(description, map, tile)
     @setScale(0.9)
-    @getTexture().generateMipmap()
 
   interact: (player, tile) ->
     player.levelComplete()
